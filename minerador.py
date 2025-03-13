@@ -125,5 +125,5 @@ def main():
     # Exibir a quantidade de BTC minerado
     print(f"\nVocê minerou {btc_mined:.8f} BTC!")
 
-if name == "main":
-    main()
+if _name_ == "_main_":
+    main()
