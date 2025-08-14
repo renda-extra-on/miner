@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BitMiner</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#0f172a',
+            secondary: '#1e293b',
+            accent: '#f59e0b',
+            dark: '#0a0f1a',
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          },
+        }
+      }
+    }
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      color: white;
+      min-height: 100vh;
+    }
+    
+    .glass-effect {
+      background: rgba(15, 23, 42, 0.7);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    
+    .nav-icon {
+      font-size: 1.8rem;
+      transition: all 0.3s ease;
+    }
+    
+    .nav-icon:hover {
+      transform: translateY(-2px);
+      color: #f59e0b;
+    }
+    
+    .active-nav {
+      color: #f59e0b;
+      position: relative;
+    }
+    
+    .active-nav::after {
+      content: '';
+      position: absolute;
+      bottom: -6px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background-color: #f59e0b;
+    }
+    
+    #cryptoBar {
+      background: linear-gradient(90deg, #13293b 0%, #1a3a56 100%);
+      white-space: nowrap;
+      overflow: hidden;
+      position: fixed;
+      top: 64px;
+      z-index: 20;
+      padding: 10px 0;
+      font-size: 0.95rem;
+      width: 100%;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    #cryptoScroll {
+      display: flex;
+      animation: scroll-left 15s linear infinite;
+    }
+    
+    @keyframes scroll-left {
+      0% { transform: translateX(100%); }
+      100% { transform: translateX(-100%); }
+    }
+    
+    #cryptoScroll span {
+      color: #ffffff;
+      margin: 0 15px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    
+    #cryptoScroll span i {
+      color: #fbbf24;
+    }
+    
+    #cryptoScroll span:nth-child(1) i { color: #f97316; }
+    #cryptoScroll span:nth-child(2) i { color: #3b82f6; }
+    #cryptoScroll span:nth-child(3) i { color: #f59e0b; }
+    #cryptoScroll span:nth-child(4) i { color: #10b981; }
+    #cryptoScroll span:nth-child(5) i { color: #22c55e; }
+    #cryptoScroll span:nth-child(6) i { color: #9333ea; }
+    #cryptoScroll span:nth-child(7) i { color: #f472b6; }
+    #cryptoScroll span:nth-child(8) i { color: #a3e635; }
+    
+    @keyframes fade-in-down {
+      0% { opacity: 0; transform: translateY(-20px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+    
+    .animate-fade-in-down {
+      animation: fade-in-down 0.4s ease-out both;
+    }
+    
+    .progress-gradient {
+      background: linear-gradient(90deg, #10b981 0%, #3b82f6 100%);
+    }
+    
+    .action-card {
+      transition: all 0.3s ease;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    
+    .action-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+    }
+    
+    .log-entry {
+      animation: fade-in 0.3s ease-out;
+    }
+    
+    @keyframes fade-in {
+      from { opacity: 0; transform: translateY(5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .pulse-animation {
+      animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+    
+    .btn-mining {
+      background: linear-gradient(90deg, #3b82f6 0%, #6366f1 100%);
+      transition: all 0.3s ease;
+    }
+    
+    .btn-mining:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.3);
+    }
+    
+    .btn-mining:active {
+      transform: translateY(0);
+    }
+    
+    .btn-disabled {
+      background: linear-gradient(90deg, #64748b 0%, #475569 100%);
+      cursor: not-allowed;
+    }
+    
+    .stat-card {
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      transition: all 0.3s ease;
+    }
+    
+    .stat-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+    }
+    
+    .banner-image {
+      transition: all 0.5s ease;
+    }
+    
+    .banner-image:hover {
+      transform: scale(1.02);
+    }
+    
+    /* Ajustes adicionais */
+    main, section {
+      padding-top: 130px !important;
+    }
+    
+    .notification-empty {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      text-align: center;
+    }
+    
+    .notification-empty i {
+      font-size: 3rem;
+      color: #64748b;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body class="flex flex-col min-h-screen">
+
+<!-- Cabeçalho -->
+<header class="flex items-center justify-between px-5 py-4 bg-gray-900/80 glass-effect shadow-md h-[64px] fixed top-0 left-0 right-0 z-30">
+  <div class="flex items-center gap-3">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Bitcoin.svg/1024px-Bitcoin.svg.png" alt="Logo" class="h-9 w-auto pulse-animation">
+    <span class="text-lg font-semibold text-white whitespace-nowrap bg-gradient-to-r from-yellow-400 to-yellow-600 bg-clip-text text-transparent">BitMiner</span>
+  </div>
+  <div class="relative">
+    <button id="notificationBtn" class="relative focus:outline-none group">
+      <i class="ri-notification-3-line text-white text-2xl group-hover:text-yellow-400 transition-colors"></i>
+      <!-- Removido o badge de notificação -->
+    </button>
+  </div>
+    
+  <!-- Painel flutuante de notificação -->
+  <div id="notificationPanel" class="hidden fixed bottom-24 right-4 bg-gray-900 border border-gray-700 text-white px-4 py-3 rounded-xl shadow-2xl w-[300px] z-50 animate-fade-in-down glass-effect">
+    <div class="notification-empty">
+      <i class="ri-notification-off-line"></i>
+      <p class="font-medium">Nenhuma notificação</p>
+      <p class="text-sm text-gray-400 mt-1">Você não tem novas notificações</p>
+    </div>
+  </div>
+</header>
+
+<!-- Barra de preços -->
+<div id="cryptoBar">
+  <div id="cryptoScroll">
+    <span class="mx-3"><i class="ri-bit-coin-line"></i> BTC: $60,000</span>
+    <span class="mx-3"><i class="ri-ethereum-line"></i> ETH: $3,000</span>
+    <span class="mx-3"><i class="ri-coins-line"></i> BNB: $400</span>
+    <span class="mx-3"><i class="ri-copper-coin-line"></i> XRP: $0.50</span>
+    <span class="mx-3"><i class="ri-money-dollar-circle-line"></i> USDT: $1.00</span>
+    <span class="mx-3"><i class="ri-database-2-line"></i> ADA: $1.20</span>
+    <span class="mx-3"><i class="ri-money-euro-circle-line"></i> SOL: $140</span>
+    <span class="mx-3"><i class="ri-copper-coin-line"></i> DOGE: $0.08</span>
+  </div>
+</div>
+
+<!-- Conteúdo principal -->
+<main class="flex-1 px-4 pb-24" id="miner">
+  <div class="max-w-md mx-auto">
+    <div class="flex items-center justify-between mb-6">
+      <h2 class="text-2xl font-bold text-white">
+        Dashboard
+        <span class="ml-2 bg-gradient-to-r from-yellow-600 to-yellow-700 px-3 py-1 rounded-full text-xs font-semibold">VIP 0</span>
+      </h2>
+      <div class="text-xs text-gray-400">Atualizado agora</div>
+    </div>
+        
+    <div class="grid grid-cols-2 gap-3 mb-6">
+      <div class="stat-card bg-gray-800/70 rounded-lg p-3 text-center">
+        <div class="text-xs text-gray-400 mb-1">Hashrate</div>
+        <div id="hashrate" class="text-lg font-semibold text-blue-400">0 H/s</div>
+      </div>
+      <div class="stat-card bg-gray-800/70 rounded-lg p-3 text-center">
+        <div class="text-xs text-gray-400 mb-1">Temperatura</div>
+        <div id="temperature" class="text-lg font-semibold text-red-400">0 °C</div>
+      </div>
+      <div class="stat-card bg-gray-800/70 rounded-lg p-3 text-center">
+        <div class="text-xs text-gray-400 mb-1">Energia</div>
+        <div id="power" class="text-lg font-semibold text-green-400">0 W</div>
+      </div>
+      <div class="stat-card bg-gray-800/70 rounded-lg p-3 text-center">
+        <div class="text-xs text-gray-400 mb-1">Blocos</div>
+        <div id="blocks" class="text-lg font-semibold text-purple-400">0</div>
+      </div>
+    </div>
+        
+    <div class="mb-6">
+      <div class="flex justify-between text-xs mb-1">
+        <span>Progresso</span>
+        <span id="progressPercent">0%</span>
+      </div>
+      <div class="w-full bg-gray-700 rounded-full h-2.5 overflow-hidden mb-2">
+        <div id="progressBar" class="progress-gradient h-full rounded-full w-0"></div>
+      </div>
+    </div>
+        
+    <div class="bg-gray-800/70 rounded-xl p-4 mb-6">
+      <div class="text-xs text-gray-400 mb-1">Carteira</div>
+      <div id="wallet" class="text-xl font-bold text-yellow-400">0.00000000 BTC</div>
+    </div>
+        
+    <button id="startBtn" class="btn-mining w-full text-white font-medium px-6 py-3 rounded-xl mb-4 shadow-lg">
+      Iniciar Mineração
+    </button>
+        
+    <div id="withdrawBtnContainer" class="mt-4"></div>
+    <div id="status" class="mt-2 text-sm text-center text-gray-400"></div>
+        
+    <div class="bg-gray-800/70 rounded-xl p-3 mt-6">
+      <div class="text-xs text-gray-400 mb-2 flex justify-between items-center">
+        <span>Log de Mineração</span>
+        <button id="clearLogBtn" class="text-xs bg-gray-700 hover:bg-gray-600 px-2 py-1 rounded">
+          Limpar
+        </button>
+      </div>
+      <pre id="logBox" class="bg-gray-900/50 text-green-400 p-3 h-40 overflow-y-auto text-xs rounded-lg font-mono leading-relaxed"></pre>
+    </div>
+        
+    <!-- Toasts -->
+    <div id="warningToast" class="hidden fixed bottom-20 left-1/2 transform -translate-x-1/2 bg-yellow-600 text-black p-3 rounded-lg shadow-xl z-50 max-w-xs text-sm">
+      <div class="flex items-center gap-2">
+        <i class="ri-alert-line"></i>
+        <span>GPU super aquecida! Reduzindo performance temporariamente.</span>
+      </div>
+    </div>
+        
+    <div id="withdrawalToast" class="hidden fixed inset-x-0 mx-auto z-50 max-w-sm bottom-28 animate-fade-in-down">
+      <div class="flex items-start gap-4 bg-gray-900 border border-green-500 text-green-300 px-5 py-4 rounded-2xl shadow-2xl glass-effect">
+        <i class="ri-checkbox-circle-fill text-green-400 text-3xl animate-pulse"></i>
+        <div>
+          <p class="font-semibold text-base">Mineração Concluída</p>
+          <p class="text-sm text-green-400 opacity-80">Bloco validado com sucesso. Recompensa disponível para saque.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- Outras seções -->
+<section id="home" class="p-4 pb-24 text-white min-h-screen overflow-y-auto" style="display: block;">
+  <div class="max-w-md mx-auto">
+    <!-- Banner -->
+    <div class="flex items-center justify-center mb-6">
+      <div class="w-full h-[180px] rounded-xl shadow-xl overflow-hidden banner-image">
+        <img 
+          src="https://img.freepik.com/vetores-premium/bitcoin-com-indicadores-em-conceito-futurista_73426-538.jpg" 
+          alt="Banner" 
+          class="w-full h-full object-cover"
+        >
+      </div>
+    </div>
+        
+    <!-- Quadrados de ação -->
+    <div class="grid grid-cols-2 gap-4">
+      <button onclick="showUnavailable('recarga')" class="action-card bg-gray-800/70 rounded-xl p-5 shadow hover:shadow-lg flex flex-col items-center">
+        <i class="ri-bank-card-line text-3xl mb-2 text-blue-400"></i>
+        <span class="text-sm font-medium">Recarga</span>
+      </button>
+      <button onclick="navigateTo('invite')" class="action-card bg-gray-800/70 rounded-xl p-5 shadow hover:shadow-lg flex flex-col items-center">
+        <i class="ri-user-add-line text-3xl mb-2 text-green-400"></i>
+        <span class="text-sm font-medium">Convidar</span>
+      </button>
+      <button onclick="navigateTo('miner')" class="action-card bg-gray-800/70 rounded-xl p-5 shadow hover:shadow-lg flex flex-col items-center">
+        <i class="ri-cpu-line text-3xl mb-2 text-yellow-400"></i>
+        <span class="text-sm font-medium">Mineração</span>
+      </button>
+      <button onclick="showUnavailable('saque')" class="action-card bg-gray-800/70 rounded-xl p-5 shadow hover:shadow-lg flex flex-col items-center">
+        <i class="ri-wallet-3-line text-3xl mb-2 text-red-400"></i>
+        <span class="text-sm font-medium">Saque</span>
+      </button>
+      <button onclick="openHowItWorks()" class="action-card bg-gray-800/70 rounded-xl p-5 shadow hover:shadow-lg flex flex-col items-center">
+        <i class="ri-information-line text-3xl mb-2 text-purple-400"></i>
+        <span class="text-sm font-medium">Como Funciona</span>
+      </button>
+      <button onclick="window.open('https://br.cointelegraph.com/tags/bitcoin', '_blank')" class="action-card bg-gray-800/70 rounded-xl p-5 shadow hover:shadow-lg flex flex-col items-center">
+        <i class="ri-megaphone-line text-3xl mb-2 text-orange-400"></i>
+        <span class="text-sm font-medium">Novidades</span>
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- Modal: Como Funciona -->
+<div id="howItWorksModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/70">
+  <div class="bg-gray-900 text-gray-200 max-w-md w-full mx-4 p-6 rounded-2xl shadow-2xl animate-fade-in-down glass-effect relative">
+    <button onclick="closeHowItWorks()" class="absolute top-3 right-3 text-gray-400 hover:text-white text-xl">
+      <i class="ri-close-line"></i>
+    </button>
+    <h2 class="text-xl font-bold mb-4 text-yellow-400 flex items-center gap-2">
+      <i class="ri-information-line"></i> Como Funciona
+    </h2>
+    <div class="space-y-3 text-sm text-gray-300 leading-relaxed">
+      <p class="flex items-start gap-2">
+        <i class="ri-checkbox-circle-line text-yellow-400 mt-1"></i>
+        Ao investir conosco, seu capital é alocado em operações reais de mineração de Bitcoin, utilizando equipamentos de alto desempenho e estruturas seguras.
+      </p>
+      <p class="flex items-start gap-2">
+        <i class="ri-checkbox-circle-line text-yellow-400 mt-1"></i>
+        Nossos sistemas trabalham 24 horas por dia validando blocos e processando transações na blockchain, gerando lucros com base na potência computacional e na dificuldade da rede.
+      </p>
+      <p class="flex items-start gap-2">
+        <i class="ri-checkbox-circle-line text-yellow-400 mt-1"></i>
+        Os rendimentos são calculados automaticamente e enviados diretamente via Pix após o período de mineração, com total transparência e agilidade.
+      </p>
+      <p class="flex items-start gap-2">
+        <i class="ri-checkbox-circle-line text-yellow-400 mt-1"></i>
+        Você acompanha tudo em tempo real: evolução dos blocos minerados, temperatura dos rigs, hashrate, consumo de energia e status da operação.
+      </p>
+      <p class="flex items-start gap-2">
+        <i class="ri-checkbox-circle-line text-yellow-400 mt-1"></i>
+        Também é possível aumentar seus ganhos convidando amigos e ativando recursos exclusivos na plataforma.
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- Notificação de Sistema Indisponível -->
+<div id="customToast" class="hidden fixed left-1/2 transform -translate-x-1/2 z-50 w-full max-w-sm bottom-24 animate-fade-in-down">
+  <div class="flex items-start gap-4 bg-gray-900 border border-yellow-500 text-yellow-300 px-5 py-4 rounded-2xl shadow-2xl glass-effect">
+    <i class="ri-alert-line text-yellow-400 text-3xl animate-pulse"></i>
+    <div>
+      <p class="font-semibold text-base" id="toastTitle">Aviso</p>
+      <p class="text-sm text-yellow-400 opacity-80" id="toastMessage">Nosso sistema está temporariamente indisponível.</p>
+    </div>
+  </div>
+</div>
+
+<section id="invite" style="display: none;" class="p-4 pb-24 text-white min-h-screen overflow-y-auto">
+  <div class="max-w-md mx-auto">
+    <!-- Cabeçalho -->
+    <div class="flex items-center gap-3 mb-6">
+      <div class="bg-green-500/20 p-2 rounded-lg">
+        <i class="ri-user-add-line text-2xl text-green-400"></i>
+      </div>
+      <h2 class="text-2xl font-bold">Convide Amigos</h2>
+    </div>
+        
+    <!-- Código de convite -->
+    <div class="bg-gray-800/70 rounded-xl p-4 shadow-md mb-6">
+      <p class="text-gray-400 text-sm mb-2">Seu código de convite:</p>
+      <div class="flex justify-between items-center bg-gray-900 px-4 py-3 rounded-lg">
+        <div>
+          <span id="inviteCode" class="font-mono text-green-300 text-lg select-all">B3T4-X7C9</span>
+        </div>
+        <button onclick="copyInviteCode()" class="text-sm bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center gap-2">
+          <i class="ri-file-copy-line"></i> Copiar
+        </button>
+      </div>
+      <p class="text-xs text-gray-500 mt-2">Compartilhe este código com seus amigos para ganhar recompensas</p>
+    </div>
+        
+    <!-- Estatísticas do convite -->
+    <div class="grid grid-cols-2 gap-4 mb-6">
+      <div class="stat-card bg-gray-800/70 p-5 rounded-xl flex flex-col justify-center items-center min-h-[120px]">
+        <p class="text-sm text-gray-400 mb-2">Amigos convidados</p>
+        <p class="text-3xl font-bold text-blue-400" id="invitedCount">0</p>
+      </div>
+      <div class="stat-card bg-gray-800/70 p-5 rounded-xl flex flex-col justify-center items-center min-h-[120px]">
+        <p class="text-sm text-gray-400 mb-2">Recompensas</p>
+        <p class="text-3xl font-bold text-yellow-300">0.00000000 BTC</p>
+      </div>
+    </div>
+        
+    <!-- Mensagem motivacional -->
+    <div class="bg-gray-800/70 text-sm p-4 rounded-xl mb-4">
+      <div class="flex items-start gap-3">
+        <i class="ri-gift-line text-yellow-400 text-xl"></i>
+        <div>
+          <p class="font-medium mb-1">Ganhe 10% de bônus</p>
+          <p class="text-gray-300 text-xs">
+            Convide amigos e ganhe uma porcentagem da mineração deles automaticamente!
+            Cada amigo convidado aumenta seus ganhos em 2% adicional.
+          </p>
+        </div>
+      </div>
+    </div>
+        
+    <!-- Compartilhamento -->
+    <div class="bg-gray-800/70 rounded-xl p-4">
+      <p class="text-sm text-gray-400 mb-3">Compartilhar via:</p>
+      <div class="grid grid-cols-4 gap-3">
+        <button class="bg-blue-600 hover:bg-blue-700 p-2 rounded-lg flex items-center justify-center">
+          <i class="ri-facebook-fill text-xl"></i>
+        </button>
+        <button class="bg-blue-400 hover:bg-blue-500 p-2 rounded-lg flex items-center justify-center">
+          <i class="ri-twitter-fill text-xl"></i>
+        </button>
+        <button class="bg-green-500 hover:bg-green-600 p-2 rounded-lg flex items-center justify-center">
+          <i class="ri-whatsapp-line text-xl"></i>
+        </button>
+        <button class="bg-gray-600 hover:bg-gray-500 p-2 rounded-lg flex items-center justify-center">
+          <i class="ri-more-line text-xl"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Navegação inferior -->
+<nav class="fixed bottom-0 w-full bg-gray-900/80 glass-effect py-3 flex justify-around text-white border-t border-gray-700/50 z-30">
+  <button onclick="navigateTo('home')" class="flex flex-col items-center nav-icon">
+    <i class="ri-home-4-line"></i>
+    <span class="text-xs mt-1">Início</span>
+  </button>
+  <button onclick="navigateTo('miner')" class="flex flex-col items-center nav-icon">
+    <i class="ri-cpu-line"></i>
+    <span class="text-xs mt-1">Mineração</span>
+  </button>
+  <button onclick="navigateTo('invite')" class="flex flex-col items-center nav-icon">
+    <i class="ri-user-add-line"></i>
+    <span class="text-xs mt-1">Convidar</span>
+  </button>
+</nav>
+
+<script>
+  // Elementos da mineração
+  const startBtn = document.getElementById("startBtn");
+  const progressBar = document.getElementById("progressBar");
+  const progressPercent = document.getElementById("progressPercent");
+  const walletDisplay = document.getElementById("wallet");
+  const blocksDisplay = document.getElementById("blocks");
+  const logBox = document.getElementById("logBox");
+  const clearLogBtn = document.getElementById("clearLogBtn");
+  const withdrawalToast = document.getElementById("withdrawalToast");
+  const hashrateDisplay = document.getElementById("hashrate");
+  const temperatureDisplay = document.getElementById("temperature");
+  const powerDisplay = document.getElementById("power");
+  const warningToast = document.getElementById("warningToast");
+  const notificationBtn = document.getElementById("notificationBtn");
+  const notificationPanel = document.getElementById("notificationPanel");
+  
+  // Variáveis de estado
+  let mining = false;
+  let miningFinished = false;
+  let wallet = 0;
+  let blocks = 0;
+  let progress = 0;
+  let interval;
+  let statsInterval;
+  let lastOverheatWarning = 0;
+  let currentSection = 'home'; // Adicionado para controlar a navegação
+
+  // Configuração
+  const miningDuration = 1200; // segundos até concluir a mineração
+  const rewardBTC = 0.00000021; // recompensa total a ser minerada
+
+  // Inicialização
+  document.addEventListener("DOMContentLoaded", () => {
+    navigateTo('home');
+    updateActiveNav();
+        
+    // Notificação
+    notificationBtn.addEventListener("click", () => {
+      if (notificationPanel.classList.contains("hidden")) {
+        notificationPanel.classList.remove("hidden");
+      } else {
+        notificationPanel.classList.add("hidden");
+      }
+    });
+        
+    // Limpar log
+    clearLogBtn.addEventListener("click", () => {
+      logBox.textContent = "";
+    });
+  });
+
+  // Mineração
+  startBtn.addEventListener("click", () => {
+    if (mining || miningFinished) return;
+    startMining();
+  });
+
+  function startMining() {
+    mining = true;
+    startBtn.textContent = "Parar Mineração";
+    startBtn.classList.remove("btn-mining");
+    startBtn.classList.add("bg-red-600", "hover:bg-red-700");
+        
+    addLog("⛏ Iniciando mineração...");
+    addLog("🔍 Conectando à rede Bitcoin...");
+    addLog("⚡ Configurando hardware...");
+
+    const steps = miningDuration;
+    const btcPerStep = rewardBTC / steps;
+    const intervalTime = 1000;
+
+    interval = setInterval(() => {
+      if (progress >= 100) {
+        stopMining(true);
+        return;
+      }
+      
+      progress += 100 / steps;
+      progressBar.style.width = `${progress}%`;
+      progressPercent.textContent = `${Math.round(progress)}%`;
+      
+      wallet += btcPerStep;
+      blocks += 1;
+      
+      walletDisplay.textContent = wallet.toFixed(8) + " BTC";
+      blocksDisplay.textContent = blocks;
+      
+      const success = Math.random() > 0.08;
+      const mined = btcPerStep.toFixed(8);
+      const log = success
+        ? `✔ Bloco ${blocks} minerado com sucesso: +${mined} BTC`
+        : `✖ Falha ao validar o bloco ${blocks}, tentando novamente...`;
+            
+      addLog(log);
+    }, intervalTime);
+
+    statsInterval = setInterval(updateStats, 2000);
+  }
+
+  function stopMining(showToast = false) {
+    clearInterval(interval);
+    clearInterval(statsInterval);
+    mining = false;
+    miningFinished = true;
+    
+    startBtn.textContent = "Mineração Concluída";
+    startBtn.classList.remove("bg-red-600", "hover:bg-red-700");
+    startBtn.classList.add("btn-disabled");
+    startBtn.disabled = true;
+    
+    addLog("✅ Mineração concluída com sucesso!");
+    addLog(`💰 Total minerado: ${wallet.toFixed(8)} BTC`);
+    
+    if (showToast) {
+      setTimeout(() => {
+        withdrawalToast.classList.remove("hidden");
+      }, 500);
+      
+      setTimeout(() => {
+        withdrawalToast.classList.add("hidden");
+      }, 7000);
+    }
+  }
+
+  function updateStats() {
+    const hashrate = (Math.random() * 20 + 50).toFixed(2);
+    const temperature = (60 + Math.random() * 10).toFixed(1);
+    const power = (110 + Math.random() * 10).toFixed(0);
+    
+    hashrateDisplay.textContent = `${hashrate} H/s`;
+    temperatureDisplay.textContent = `${temperature} °C`;
+    powerDisplay.textContent = `${power} W`;
+    
+    const now = Date.now();
+    const isOverheating = parseFloat(temperature) > 75;
+    const warningCooldown = 15000;
+    
+    if (isOverheating && now - lastOverheatWarning > warningCooldown) {
+      lastOverheatWarning = now;
+      warningToast.classList.remove("hidden");
+      addLog("⚠ Atenção: Temperatura do hardware elevada!");
+      
+      setTimeout(() => {
+        warningToast.classList.add("hidden");
+      }, 4000);
+    }
+  }
+
+  function addLog(message) {
+    const logEntry = document.createElement("div");
+    logEntry.className = "log-entry mb-1";
+    logEntry.textContent = message;
+    logBox.appendChild(logEntry);
+    logBox.scrollTop = logBox.scrollHeight;
+  }
+
+  // Navegação
+  function navigateTo(section) {
+    document.querySelectorAll("main, section").forEach(el => {
+      el.style.display = "none";
+    });
+    
+    const target = document.getElementById(section);
+    if (target) {
+      target.style.display = "block";
+      currentSection = section;
+    }
+    
+    updateActiveNav();
+  }
+
+  function updateActiveNav() {
+    document.querySelectorAll('nav button').forEach(btn => {
+      btn.classList.remove('active-nav');
+    });
+    
+    const activeBtn = document.querySelector(`nav button[onclick="navigateTo('${currentSection}')"]`);
+    if (activeBtn) {
+      activeBtn.classList.add('active-nav');
+    }
+  }
+
+  // Funções auxiliares
+  function showToast(tipo) {
+    const toast = document.getElementById("customToast");
+    const title = document.getElementById("toastTitle");
+    const message = document.getElementById("toastMessage");
+    
+    if (tipo === "recarga") {
+      title.textContent = "Recarga Indisponível";
+      message.textContent = "Nosso sistema de recarga automática está temporariamente fora do ar.";
+    } else if (tipo === "saque") {
+      title.textContent = "Saque Indisponível";
+      message.textContent = "Para prosseguir com sua solicitação de retirada, entre em contato com nossa equipe diretamente pelo WhatsApp.";
+    }
+    
+    toast.classList.remove("hidden");
+    
+    setTimeout(() => {
+      toast.classList.add("hidden");
+    }, 6000);
+  }
+
+  function openHowItWorks() {
+    document.getElementById("howItWorksModal").classList.remove("hidden");
+  }
+
+  function closeHowItWorks() {
+    document.getElementById("howItWorksModal").classList.add("hidden");
+  }
+
+  function showUnavailable(type) {
+    const label = type === "recarga"
+      ? "Nosso sistema de recarga automática está indisponível no momento."
+      : "Para prosseguir com sua solicitação de retirada, entre em contato com nossa equipe diretamente pelo WhatsApp.";
+    
+    const toast = document.createElement("div");
+    toast.className = "fixed inset-0 z-50 flex items-end justify-center pb-24 pointer-events-none";
+    toast.innerHTML = `
+      <div class="bg-gray-900 border border-yellow-500 text-yellow-300 px-5 py-4 rounded-2xl shadow-2xl animate-fade-in-down max-w-sm w-[90%] pointer-events-auto glass-effect">
+        <div class="flex items-start gap-4">
+          <i class="ri-error-warning-line text-yellow-400 text-3xl animate-pulse"></i>
+          <div>
+            <p class="font-semibold text-base">Indisponível</p>
+            <p class="text-sm text-yellow-400 opacity-80">${label}</p>
+          </div>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 6000);
+  }
+
+  function copyInviteCode() {
+    const inviteCode = document.getElementById("inviteCode").textContent;
+    navigator.clipboard.writeText(inviteCode).then(() => {
+      const toast = document.createElement("div");
+      toast.className = "fixed inset-0 z-50 flex items-end justify-center pb-24 pointer-events-none";
+      toast.innerHTML = `
+        <div class="bg-gray-900 border border-green-500 text-green-300 px-5 py-4 rounded-2xl shadow-2xl animate-fade-in-down max-w-sm w-[90%] pointer-events-auto glass-effect">
+          <div class="flex items-center gap-4">
+            <i class="ri-checkbox-circle-line text-green-400 text-3xl"></i>
+            <div>
+              <p class="text-sm">Código copiado para a área de transferência!</p>
+            </div>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 3000);
+    });
+  }
+</script>
+</body>
+</html>
