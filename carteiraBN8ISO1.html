@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carteira Virtual Bitcoin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 100;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+        
+        .modal-content {
+            background-color: #1a1a2e;
+            margin: 15% auto;
+            padding: 20px;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 400px;
+            animation: modalFadeIn 0.3s;
+        }
+        
+        @keyframes modalFadeIn {
+            from {opacity: 0; transform: translateY(-50px);}
+            to {opacity: 1; transform: translateY(0);}
+        }
+        
+        .close-btn {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .close-btn:hover {
+            color: white;
+        }
+        
+        .btc-gradient {
+            background: linear-gradient(135deg, #f7931a 0%, #f2a900 100%);
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white min-h-screen flex flex-col">
+    <div class="container mx-auto px-4 py-8 flex-1">
+        <header class="mb-8">
+            <h1 class="text-2xl font-bold text-center">Minha Carteira</h1>
+        </header>
+        
+        <div class="max-w-md mx-auto bg-gray-800 rounded-xl shadow-md overflow-hidden mb-8">
+            <div class="btc-gradient p-6">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <p class="text-sm opacity-80">Saldo em Bitcoin</p>
+                        <p class="text-3xl font-bold">0.000000 BTC</p>
+                    </div>
+                    <div class="text-4xl">
+                        <i class="fab fa-bitcoin"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="p-6 bg-gray-700">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <p class="text-sm opacity-80">Saldo em Real</p>
+                        <p class="text-3xl font-bold">R$ 0</p>
+                    </div>
+                    <div class="text-4xl">
+                        <i class="fas fa-wallet"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="max-w-md mx-auto flex justify-between gap-4">
+            <button id="transferBtn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg flex-1 transition-colors">
+                <i class="fas fa-exchange-alt mr-2"></i> Transferir
+            </button>
+            
+            <button id="withdrawBtn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg flex-1 transition-colors">
+                <i class="fas fa-money-bill-wave mr-2"></i> Sacar
+            </button>
+        </div>
+    </div>
+    
+    <!-- Modal Transferência -->
+    <div id="transferModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <div class="text-center">
+                <div class="text-5xl text-yellow-500 mb-4">
+                    <i class="fas fa-exclamation-circle"></i>
+                </div>
+                <h2 class="text-xl font-bold mb-2">Transferência Indisponível</h2>
+                <p class="mb-6">Esta funcionalidade não está disponível no seu nível atual de conta.</p>
+                <button class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg transition-colors close-modal">
+                    Entendi
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal Saque -->
+    <div id="withdrawModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <div class="text-center">
+                <div class="text-5xl text-green-500 mb-4">
+                    <i class="fas fa-info-circle"></i>
+                </div>
+                <h2 class="text-xl font-bold mb-2">Valor Mínimo de Saque</h2>
+                <p class="mb-6">O valor mínimo para saque é de R$ 0,00.</p>
+                <button class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-lg transition-colors close-modal">
+                    Entendi
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Abrir modais
+        document.getElementById('transferBtn').addEventListener('click', function() {
+            document.getElementById('transferModal').style.display = 'block';
+        });
+        
+        document.getElementById('withdrawBtn').addEventListener('click', function() {
+            document.getElementById('withdrawModal').style.display = 'block';
+        });
+        
+        // Fechar modais
+        const closeButtons = document.querySelectorAll('.close-btn, .close-modal');
+        closeButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                document.querySelectorAll('.modal').forEach(modal => {
+                    modal.style.display = 'none';
+                });
+            });
+        });
+        
+        // Fechar ao clicar fora do modal
+        window.addEventListener('click', function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
